@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
+
+    <script src="js/jquery.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <script type="text/javascript" src="js/prototype.js"></script>
+    <script type="text/javascript" src="js/calendarview.js"></script>
+    <script type="text/javascript" src="js/login.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css/calendarview.css" type="text/css" />
+    <link rel="stylesheet" href="css/calendar.css" type="text/css" />
+    <link rel="stylesheet" href="css/login.css" type="text/css" />
+    <title>Login</title>
+
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <div class="panel panel-login">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <a href="#" class="active" id="login-form-link" onclick="signin()"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Sign In</a>
+                        </div>
+                        <div class="col-xs-6">
+                            <a href="#"  id="register-form-link" onclick="register()"> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Sign Up</a>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form id="login-form" role="form" style="display: block;">
+                                <div class="form-group">
+                                    <input type="email" name="email" id="email" tabindex="1" class="form-control" placeholder="Email" value="" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-sm-offset-3">
+                                            <input type="submit" onclick="btnSignin()" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="Sign In">
+                                            <input type="submit" onclick="btnSignup()" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Sign Up">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/3.7.6/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyC0eO6kxmPpPjzvhU7v0c_nwe4AGtLSA-g",
+        authDomain: "event-calendar-c4565.firebaseapp.com",
+        databaseURL: "https://event-calendar-c4565.firebaseio.com",
+        projectId: "event-calendar-c4565",
+        storageBucket: "event-calendar-c4565.appspot.com",
+        messagingSenderId: "970287443412"
+    };
+    firebase.initializeApp(config);
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+
+    function btnSignup(){
+
+        //sign up
+        //get a reference to the form
+        var signup = document.getElementById('login-form');
+        //add a listener to the form
+       signup.addEventListener('submit',getFormData);
+        function getFormData(event){
+            //stop the form from refreshing the page
+
+            //get data from form
+            var data = new FormData(event.target);
+            //sign user up with firebase
+            firebase.auth().createUserWithEmailAndPassword(data.get('email'), data.get('password')).catch(function(error) {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                alert(errorMessage);
+                console.log(errorMessage);
+            });
+
+            event.preventDefault();
+
+            // if register succesful then sign in
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    // User is signed in.
+                    //document.getElementById('message').value = "Hello "+user.email;
+                    // alert("hello" +user.email);
+                    window.location.href="index.html";
+                    var displayName = user.displayName;
+                    var email = user.email;
+                    var emailVerified = user.emailVerified;
+                    var photoURL = user.photoURL;
+                    var isAnonymous = user.isAnonymous;
+                    var uid = user.uid;
+                    var providerData = user.providerData;
+                    // ...
+                } else {
+                    // User is signed out.
+                    // ...
+                }
+            });
+
+        }
+
+
+    }
+
+    function btnSignin() {
+
+        //get a reference to the sign in form
+        var signIn = document.getElementById('login-form');
+        signIn.addEventListener('submit',signUserIn);
+        function signUserIn(event){
+            event.preventDefault();
+            var signindata = new FormData(event.target);
+            firebase.auth().signInWithEmailAndPassword(signindata.get('email'),signindata.get('password'))
+                .catch(function(error) {
+                    // Handle Errors here.
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                   // console.log(errorMessage);
+                    alert("Invalid Username or Password! Please Try Again");
+                });
+
+        }
+
+        //sign in
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                // User is signed in.
+
+                window.location.href="index.html";
+
+                // ...
+            } else {
+                // User is signed out.
+                // ...
+            }
+        });
+    }
+
+
+
+
+
+</script>
+
+</body>
+</html>

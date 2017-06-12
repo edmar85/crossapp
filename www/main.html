@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <!--
+        Customize this policy to fit your own app's needs. For more guidance, see:
+            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+        Some notes:
+            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+                * Enable inline JS: add 'unsafe-inline' to default-src
+        -->
+        <!--<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">-->
+
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+        <script src="js/jquery.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <script type="text/javascript" src="js/prototype.js"></script>
+        <script type="text/javascript" src="js/calendarview.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="css/calendarview.css" type="text/css" />
+        <link rel="stylesheet" href="css/calendar.css" type="text/css" />
+        <script type="text/javascript">
+            window.onload = function() {
+                Calendar.setup({
+                    dateField     : 'date',
+                    parentElement : 'calendar'
+                })
+
+            }
+
+
+
+        </script>
+
+
+        <title>My Event Calendar</title>
+        <style>
+            #date {
+                visibility: hidden;
+            }
+
+            #displayEvents {
+                margin-left: 10px;
+                margin-right: 10px;
+
+            }
+            #br {
+                margin-bottom: 2px;
+            }
+
+            nav {
+                display: inline-block;
+                width: 100%;
+
+            }
+            nav>ul>li {
+                list-style: none;
+                text-align: right;
+                text-decoration: none;
+
+            }
+
+            #logoutbtn {
+                margin-left: 5px;
+                visibility: hidden;
+            }
+
+            #user {
+                margin-left:10px;
+            }
+
+
+        </style>
+
+        <script>
+            (function($) {
+
+                $(document).ready( function() {
+                    //logout user
+                    $("#logoutbtn").click(function(){
+                        logUserOut();
+                    })
+
+                } );
+
+            })( jQuery );
+        </script>
+
+    </head>
+    <body>
+
+            <nav class="nav navbar-default">
+                <a href="index.html"><button type="button" id="logoutbtn" class="btn btn-danger navbar-btn"><span class="glyphicon glyphicon-log-out"></span> Sign out</button></a>
+                <label id="user"></label>
+            </nav>
+
+        <!--<div class="app">-->
+            <div class=".clearfix"></div>
+            <div id="calendar" ></div><br>
+            <div id="date" onchange="filterEvents()"></div>
+            <div id="displayEvents" class="panel-primary"></div>
+
+            <button type="button" id="btn-style" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#myModal">
+            <span class="glyphicon glyphicon-plus"></span>
+            </button>
+            <!--  Modal -->
+            <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal Content -->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;
+                            </button>
+                            <h4 class="modal-title">Event</h4>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="form-group">
+                                <label for="title">Title:</label>
+                                <input type="text" class="form-control" id="title">
+                            </div>
+                            <div class="form-group">
+                                <label for="date1">Select Date:</label>
+                                <input type="date" class="form-control" id="date1">
+                            </div>
+                            <div class="form-group">
+                                <label for="time">Time:</label>
+                                <input type="time" class="form-control" id="time">
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" data-dismiss="modal" onclick="save()" id="save" >save</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">close</button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- End Modal -->
+        <!--</div>-->
+        <!--<script type="text/javascript" src="js/cordova.js"></script>-->
+        <script src="https://www.gstatic.com/firebasejs/3.7.6/firebase.js"></script>
+        <script>
+            // Initialize Firebase
+            var config = {
+                apiKey: "AIzaSyC0eO6kxmPpPjzvhU7v0c_nwe4AGtLSA-g",
+                authDomain: "event-calendar-c4565.firebaseapp.com",
+                databaseURL: "https://event-calendar-c4565.firebaseio.com",
+                projectId: "event-calendar-c4565",
+                storageBucket: "event-calendar-c4565.appspot.com",
+                messagingSenderId: "970287443412"
+            };
+            firebase.initializeApp(config);
+        </script>
+        
+        <script type="text/javascript" src="js/index.js"></script>
+    </body>
+</html>
